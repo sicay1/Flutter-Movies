@@ -14,9 +14,12 @@ class ImageHero extends StatelessWidget {
       height: height,
       child: Hero(
         tag: tag + "_ImageHero",
-        child: Image.network(
-          imageUrl,
-          fit: BoxFit.contain,
+        child: Material(
+          color: Colors.transparent,
+          child: Image.network(
+            imageUrl,
+            fit: BoxFit.contain,
+          ),
         ),
       ),
     );
