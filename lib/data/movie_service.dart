@@ -2,6 +2,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../data/movie.dart';
 
+const String _BASE_URL = "http://www.omdbapi.com/";
 const String _API_KEY = "583ac0ed";
 
 Future<dynamic> searchMovies(String searchKey) async {
@@ -9,8 +10,8 @@ Future<dynamic> searchMovies(String searchKey) async {
     return "Type to search!";
   }
 
-  final http.Response response = await http.get(
-      "http://www.omdbapi.com/" + "?s=" + searchKey + "&apikey=" + _API_KEY);
+  final http.Response response =
+      await http.get(_BASE_URL + "?s=" + searchKey + "&apikey=" + _API_KEY);
 
   print(response.body);
 
@@ -26,20 +27,8 @@ Future<dynamic> searchMovies(String searchKey) async {
 
 List<Movie> _parseSearchResults(List data) {
   List<Movie> list = List();
-
   for (int i = 0; i < data.length; i++) {
-    String id = data[i]["imdbID"];
-    String title = data[i]["Title"];
-    String year = data[i]["Year"];
-    String posterUrl = data[i]["Poster"];
-
-    list.add(Movie(
-      id: id,
-      title: title,
-      year: year,
-      posterUrl: posterUrl,
-    ));
+    list.add(Movie.fromJson(data[i]));
   }
-
   return list;
 }

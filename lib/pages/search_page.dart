@@ -13,7 +13,13 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  String searchKey = "";
+  Future _future;
+
+  @override
+  void initState() {
+    _future = service.searchMovies("");
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +44,7 @@ class _SearchPageState extends State<SearchPage> {
         onSubmitted: (input) {
           FocusScope.of(context).requestFocus(new FocusNode());
           setState(() {
-            searchKey = input;
+            _future = service.searchMovies(input);
           });
         },
         style: TextStyle(
@@ -59,27 +65,25 @@ class _SearchPageState extends State<SearchPage> {
   Widget _buildMovieList() {
     return Flexible(
       child: Center(
-        child: Container(
-          child: FutureBuilder<dynamic>(
-            future: service.searchMovies(searchKey),
-            builder: (context, snapshot) {
-              if(snapshot.connectionState == ConnectionState.waiting)
-                return CircularProgressIndicator();
+        child: FutureBuilder<dynamic>(
+          future: _future,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting)
+              return CircularProgressIndicator();
 
-              if (snapshot.hasData && snapshot.data is List<Movie>) {
-                return ListView.builder(
-                  padding: EdgeInsets.all(8),
-                  itemCount: snapshot.data.length,
-                  itemBuilder: (context, index) =>
-                      MovieCard(snapshot.data[index]),
-                );
-              } else if (snapshot.hasData && snapshot.data is String) {
-                return Text("${snapshot.data}");
-              } else if (snapshot.hasError) {
-                return Text("${snapshot.error}");
-              }
-            },
-          ),
+            if (snapshot.hasData && snapshot.data is List<Movie>) {
+              return ListView.builder(
+                padding: EdgeInsets.all(8),
+                itemCount: snapshot.data.length,
+                itemBuilder: (context, index) =>
+                    MovieCard(snapshot.data[index]),
+              );
+            } else if (snapshot.hasData && snapshot.data is String) {
+              return Text("${snapshot.data}");
+            } else if (snapshot.hasError) {
+              return Text("${snapshot.error}");
+            }
+          },
         ),
       ),
     );
