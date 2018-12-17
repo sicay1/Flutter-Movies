@@ -81,7 +81,7 @@ class _MoviePageState extends State<MoviePage> {
             if (snapshot.connectionState == ConnectionState.waiting)
               return CircularProgressIndicator();
 
-            if (snapshot.hasData && snapshot.data != null) {
+            if (snapshot.hasData && snapshot.data is Movie) {
               Movie movie = snapshot.data as Movie;
               return MoviePoster(movie: movie);
             } else if (snapshot.hasData && snapshot.data is String) {
