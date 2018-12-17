@@ -1,6 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:flutter_movies/movie.dart';
+import 'movie.dart';
 
 const String _BASE_URL = "http://www.omdbapi.com/";
 const String _API_KEY = "583ac0ed";
