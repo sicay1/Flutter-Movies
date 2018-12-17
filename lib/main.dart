@@ -28,7 +28,7 @@ class MoviePage extends StatefulWidget {
 }
 
 class _MoviePageState extends State<MoviePage> {
-  Future _future;
+  Future<Movie> _future;
   TextEditingController _controller;
 
   @override
@@ -75,19 +75,16 @@ class _MoviePageState extends State<MoviePage> {
   Widget _buildContent() {
     return Flexible(
       child: Center(
-        child: FutureBuilder<dynamic>(
+        child: FutureBuilder<Movie>(
           future: _future,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting)
               return CircularProgressIndicator();
 
-            if (snapshot.hasData && snapshot.data is Movie) {
-              Movie movie = snapshot.data as Movie;
-              return MoviePoster(movie: movie);
-            } else if (snapshot.hasData && snapshot.data is String) {
-              return Text("${snapshot.data}");
-            } else if (snapshot.hasError) {
-              return Text("${snapshot.error}");
+            if (snapshot.hasData && snapshot.data.isValid()) {
+              return MoviePoster(movie: snapshot.data);
+            } else {
+              return Text("Error!");
             }
           },
         ),

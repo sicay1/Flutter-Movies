@@ -5,22 +5,18 @@ import 'movie.dart';
 const String _BASE_URL = "http://www.omdbapi.com/";
 const String _API_KEY = "583ac0ed";
 
-Future<dynamic> getMovieDetail(String movieTitle) async {
-  if (movieTitle.isEmpty) {
-    return "Invalid movie title!";
-  }
-
+Future<Movie> getMovieDetail(String movieTitle) async {
   final http.Response response =
       await http.get(_BASE_URL + "?t=" + movieTitle + "&apikey=" + _API_KEY);
 
-  print(response.body);
+  print("Request: ${response.request.url}");
+  print("Response: ${response.body}");
 
   Map responseJson = json.decode(response.body.toString());
   if (responseJson["Response"] == "True") {
     Movie movie = Movie.fromJson(responseJson);
     return movie;
   } else {
-    String errMessage = responseJson["Error"];
-    return errMessage;
+    return Movie.empty();
   }
 }

@@ -7,8 +7,8 @@ class Movie {
 
   Movie({
     @required this.id,
-    @required this.title,
-    @required this.posterUrl,
+    this.title,
+    this.posterUrl,
   });
 
   factory Movie.fromJson(Map<String, dynamic> json) {
@@ -17,5 +17,15 @@ class Movie {
       title: json['Title'],
       posterUrl: json['Poster'],
     );
+  }
+
+  factory Movie.empty() {
+    return Movie(
+      id: null,
+    );
+  }
+
+  bool isValid() {
+    return id != null;
   }
 }
