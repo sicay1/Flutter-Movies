@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
 import 'movie_service.dart' as service;
 import 'movie.dart';
 
@@ -84,7 +85,14 @@ class _MoviePageState extends State<MoviePage> {
             if (snapshot.hasData && snapshot.data.isValid()) {
               return MoviePoster(movie: snapshot.data);
             } else {
-              return Text("Error!");
+              return Text(
+                "Error!",
+                style: TextStyle(
+                  color: Colors.red,
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                ),
+              );
             }
           },
         ),
@@ -100,9 +108,13 @@ class MoviePoster extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Image.network(
-      movie.posterUrl,
-      fit: BoxFit.contain,
+    return Container(
+      padding: EdgeInsets.all(16),
+      color: Platform.isAndroid ? Colors.cyan : Colors.amber,
+      child: Image.network(
+        movie.posterUrl,
+        fit: BoxFit.contain,
+      ),
     );
   }
 }
