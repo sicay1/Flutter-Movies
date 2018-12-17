@@ -28,10 +28,12 @@ class MoviePage extends StatefulWidget {
 
 class _MoviePageState extends State<MoviePage> {
   Future _future;
+  TextEditingController _controller;
 
   @override
   void initState() {
     _future = service.getMovieDetail(widget.movieTitle);
+    _controller = TextEditingController(text: widget.movieTitle);
     super.initState();
   }
 
@@ -41,89 +43,68 @@ class _MoviePageState extends State<MoviePage> {
       appBar: AppBar(
         title: Text("Flutter Movie App"),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          children: <Widget>[
-            _buildButtonBar(),
-            _buildContent(),
-          ],
-        ),
+      body: Column(
+        children: <Widget>[
+          _buildSearchBar(),
+          _buildContent(),
+        ],
       ),
     );
   }
 
-  Widget _buildButtonBar() {
-    return Row(
-      children: <Widget>[
-        Spacer(),
-        RaisedButton(
-          child: Text("Inception"),
-          onPressed: () => setState(() {
-                _future = service.getMovieDetail("inception");
-              }),
+  Widget _buildSearchBar() {
+    return TextField(
+      controller: _controller,
+      textInputAction: TextInputAction.search,
+      onSubmitted: (input) {
+        setState(() {
+          _future = service.getMovieDetail(input);
+        });
+      },
+      decoration: InputDecoration(
+        prefixIcon: Icon(
+          Icons.search,
+          color: Theme.of(context).primaryColor,
         ),
-        Spacer(),
-        RaisedButton(
-          child: Text("Lion King"),
-          onPressed: () => setState(() {
-                _future = service.getMovieDetail("lion king");
-              }),
-        ),
-        Spacer(),
-      ],
+        hintText: "Type a movie title",
+      ),
     );
   }
 
   Widget _buildContent() {
     return Flexible(
-      child: FutureBuilder<dynamic>(
-        future: _future,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting)
-            return Center(child: CircularProgressIndicator());
+      child: Center(
+        child: FutureBuilder<dynamic>(
+          future: _future,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting)
+              return CircularProgressIndicator();
 
-          if (snapshot.hasData && snapshot.data is Movie) {
-            Movie movie = snapshot.data as Movie;
-            return MovieInfo(movie: movie);
-          } else if (snapshot.hasData && snapshot.data is String) {
-            return Text("${snapshot.data}");
-          } else if (snapshot.hasError) {
-            return Text("${snapshot.error}");
-          }
-        },
+            if (snapshot.hasData && snapshot.data != null) {
+              Movie movie = snapshot.data as Movie;
+              return MoviePoster(movie: movie);
+            } else if (snapshot.hasData && snapshot.data is String) {
+              return Text("${snapshot.data}");
+            } else if (snapshot.hasError) {
+              return Text("${snapshot.error}");
+            }
+          },
+        ),
       ),
     );
   }
 }
 
-class MovieInfo extends StatelessWidget {
+class MoviePoster extends StatelessWidget {
   final Movie movie;
 
-  MovieInfo({this.movie});
+  MoviePoster({this.movie});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Image.network(
-          movie.posterUrl,
-          height: 300,
-          fit: BoxFit.contain,
-        ),
-        Padding(
-          padding: EdgeInsets.all(16),
-          child: Text(
-            movie.title,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
-            ),
-          ),
-        ),
-      ],
+    return Image.network(
+      movie.posterUrl,
+      fit: BoxFit.contain,
     );
   }
 }
