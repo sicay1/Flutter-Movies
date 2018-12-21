@@ -14,30 +14,18 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.indigo,
       ),
-      home: MoviePage(movieTitle: "inception"),
+      home: MoviePage(),
     );
   }
 }
 
 class MoviePage extends StatefulWidget {
-  final String movieTitle;
-
-  MoviePage({this.movieTitle});
-
   @override
   State<MoviePage> createState() => _MoviePageState();
 }
 
 class _MoviePageState extends State<MoviePage> {
   Future<Movie> _future;
-  TextEditingController _controller;
-
-  @override
-  void initState() {
-    _future = service.getMovieDetail(widget.movieTitle);
-    _controller = TextEditingController(text: widget.movieTitle);
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +44,6 @@ class _MoviePageState extends State<MoviePage> {
 
   Widget _buildSearchBar() {
     return TextField(
-      controller: _controller,
       textInputAction: TextInputAction.search,
       onSubmitted: (input) {
         setState(() {
@@ -68,7 +55,7 @@ class _MoviePageState extends State<MoviePage> {
           Icons.search,
           color: Theme.of(context).primaryColor,
         ),
-        hintText: "Type a movie title",
+        hintText: "Movie title (e.g. inception)",
       ),
     );
   }
@@ -79,6 +66,8 @@ class _MoviePageState extends State<MoviePage> {
         child: FutureBuilder<Movie>(
           future: _future,
           builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.none)
+              return Text("Search for a movie to see its poster!");
             if (snapshot.connectionState == ConnectionState.waiting)
               return CircularProgressIndicator();
 
